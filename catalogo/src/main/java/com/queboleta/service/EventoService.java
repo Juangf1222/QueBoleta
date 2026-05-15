@@ -10,9 +10,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * TAREA 3: Servicio para crear, editar, eliminar y visualizar eventos.
- */
 @Service
 public class EventoService {
 
@@ -21,8 +18,6 @@ public class EventoService {
     public EventoService(EventoRepository eventoRepository) {
         this.eventoRepository = eventoRepository;
     }
-
-    
 
     // Crear evento (solo Administrador)
     public EventoResponse crearEvento(EventoRequest request) {
@@ -95,5 +90,4 @@ public class EventoService {
         evento.setEstado(request.getEstado() != null ? request.getEstado() : EstadoEvento.ACTIVO);
     }
 
-    
 }

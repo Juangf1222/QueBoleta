@@ -1,6 +1,5 @@
 package com.queboleta.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 import org.springframework.context.annotation.Bean;
@@ -21,10 +20,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -48,8 +50,6 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
 
                         ).permitAll()
-
-                        // TODO LO DEMÁS REQUIERE LOGIN
                         .anyRequest().authenticated()
                 )
 

@@ -35,32 +35,6 @@ CREATE TABLE IF NOT EXISTS evento (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de entradas
-CREATE TABLE IF NOT EXISTS entrada (
-    id_entrada VARCHAR(36) PRIMARY KEY,
-    codigo_qr VARCHAR(255),
-    estado VARCHAR(20) NOT NULL DEFAULT 'ACTIVA', -- ACTIVA, USADA, CANCELADA
-    propietario VARCHAR(36) NOT NULL,
-    id_evento VARCHAR(36) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (propietario) REFERENCES usuario(id_usuario),
-    FOREIGN KEY (id_evento) REFERENCES evento(id_evento)
-);
-
--- Tabla de transacciones
-CREATE TABLE IF NOT EXISTS transaccion (
-    id_transaccion VARCHAR(36) PRIMARY KEY,
-    fecha DATETIME NOT NULL,
-    impuesto DOUBLE NOT NULL,
-    total DOUBLE NOT NULL,
-    estado BOOLEAN NOT NULL DEFAULT FALSE,
-    metodo_pago VARCHAR(20) NOT NULL, -- TARJETA_CREDITO, TARJETA_DEBITO
-    id_entrada VARCHAR(36),
-    id_usuario VARCHAR(36),
-    FOREIGN KEY (id_entrada) REFERENCES entrada(id_entrada),
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
-);
-
 -- Tabla de reportes
 CREATE TABLE IF NOT EXISTS reporte (
     id_reporte VARCHAR(36) PRIMARY KEY,
