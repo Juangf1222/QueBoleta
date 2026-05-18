@@ -19,7 +19,8 @@ public class CompraController {
         this.compraService = compraService;
     }
 
-    @PreAuthorize("hasRole('CLIENTE')")
+    // 🔥 EL CAMBIO ESTÁ AQUÍ: Dejamos pasar a cualquier usuario que haya iniciado sesión
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<CompraResponse> comprar(@Valid @RequestBody CompraRequest request) {
         return ResponseEntity.ok(compraService.realizarCompra(request));

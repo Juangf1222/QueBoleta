@@ -1,17 +1,72 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router';
 
 export function LoginPage() {
-  const [isLogin, setIsLogin] = useState(true);
+  const location = useLocation(); 
+  
+  const [isLogin, setIsLogin] = useState(!location.state?.isRegister); 
+  
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  
+  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (location.state?.isRegister) {
+      setIsLogin(false);
+    } else {
+      setIsLogin(true);
+    }
+  }, [location.state]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(isLogin ? 'Login' : 'Register', { email, password, name });
+    setError('');
+    setIsLoading(true);
+
+    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/registro';
+    const url = `http://localhost:8080${endpoint}`;
+
+    const payload = isLogin 
+      ? { 
+          correo: email, 
+          contraseña: password 
+        }
+      : { 
+          nombre: name, 
+          correo: email, 
+          contraseña: password, 
+          rol: "CLIENTE" 
+        };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        navigate('/');
+      } else {
+        setError(data.mensaje || 'Error en la autenticación');
+      }
+    } catch (err) {
+      setError('Error al conectar con el servidor.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -72,6 +127,17 @@ export function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Mensaje de error dinámico */}
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 text-sm text-center font-semibold"
+              >
+                {error}
+              </motion.div>
+            )}
+
             {!isLogin && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -142,14 +208,15 @@ export function LoginPage() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              className="w-full py-4 rounded-xl font-semibold text-white text-lg mt-6 relative overflow-hidden group"
+              disabled={isLoading}
+              className="w-full py-4 rounded-xl font-semibold text-white text-lg mt-6 relative overflow-hidden group disabled:opacity-70 disabled:cursor-not-allowed"
               style={{
                 background: 'linear-gradient(135deg, #7B2CFF 0%, #00C2FF 100%)',
                 boxShadow: '0 10px 30px rgba(123, 44, 255, 0.4)',
               }}
             >
               <span className="relative z-10">
-                {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
+                {isLoading ? 'Procesando...' : (isLogin ? 'Iniciar Sesión' : 'Crear Cuenta')}
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-[#00C2FF] to-[#7B2CFF] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </motion.button>
@@ -198,7 +265,10 @@ export function LoginPage() {
             {isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}{' '}
             <button
               type="button"
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError(''); // Limpia errores al cambiar de pestaña
+              }}
               className="text-[#00C2FF] hover:text-[#7B2CFF] font-semibold transition-colors"
             >
               {isLogin ? 'Regístrate aquí' : 'Inicia sesión aquí'}
