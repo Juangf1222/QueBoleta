@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-// 🔥 Importaciones nuevas para configurar el CORS explícito
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -34,31 +33,24 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // Activar el CORS usando el bean que creamos abajo
                 .cors(Customizer.withDefaults())
-
-                // Desactivar CSRF
                 .csrf(csrf -> csrf.disable())
-
-                // Autorización de rutas
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Dejar pasar las peticiones previas de React
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/eventos/**").permitAll()
+        
+                        .requestMatchers(HttpMethod.GET, "/api/eventos/**", "/api/categorias/**").permitAll()
+                        
                         .anyRequest().authenticated()
                 )
-
-                // Sesiones sin estado (JWT)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
-                // Filtro de JWT
                 .addFilterBefore(
                         jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class
@@ -67,11 +59,10 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 🔥 BEAN NUEVO: Le dice a Spring Security que acepte peticiones de React (puerto 5173)
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // El puerto de tu Frontend
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);

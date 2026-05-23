@@ -27,8 +27,10 @@ public class EventoRequest {
     @Positive
     private int aforoDisponible;
 
-    // 🔥 ESTE ES EL QUE TE FALTABA (muy probable)
     private EstadoEvento estado;
+
+    // 🔥 EL NUEVO CAMPO: Para recibir la categoría desde el frontend
+    private Integer idCategoria;
 
     // ===== GETTERS Y SETTERS =====
 
@@ -55,4 +57,8 @@ public class EventoRequest {
 
     public EstadoEvento getEstado() { return estado; }
     public void setEstado(EstadoEvento estado) { this.estado = estado; }
+
+    // 🔥 GETTER Y SETTER DE LA CATEGORÍA
+    public Integer getIdCategoria() { return idCategoria; }
+    public void setIdCategoria(Integer idCategoria) { this.idCategoria = idCategoria; }
 }

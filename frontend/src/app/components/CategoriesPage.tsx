@@ -1,151 +1,66 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Music, Sparkles, Theater, Trophy, Calendar, MapPin, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router';
+import { Music, Sparkles, Theater, Trophy, Calendar, MapPin, ArrowLeft, HelpCircle } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router';
 
-type Category = 'Todos' | 'Conciertos' | 'Festivales' | 'Teatro' | 'Deportes';
-
-interface Event {
-  id: string;
-  name: string;
-  category: Category;
-  date: string;
-  location: string;
-  price: number;
-  image: string;
-}
-
-const categories: Category[] = ['Todos', 'Conciertos', 'Festivales', 'Teatro', 'Deportes'];
-
-const categoryIcons: Record<Category, any> = {
+// 1. Diccionario para mapear los íconos de la base de datos a componentes de Lucide
+const iconMap: Record<string, any> = {
   'Todos': Sparkles,
-  'Conciertos': Music,
-  'Festivales': Sparkles,
-  'Teatro': Theater,
-  'Deportes': Trophy,
+  'Music': Music,
+  'Sparkles': Sparkles,
+  'Theater': Theater,
+  'Trophy': Trophy,
 };
 
-const events: Event[] = [
-  {
-    id: '1',
-    name: 'The Weeknd - After Hours Tour',
-    category: 'Conciertos',
-    date: '15 Jun 2026',
-    location: 'Movistar Arena, Bogotá',
-    price: 350000,
-    image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600',
-  },
-  {
-    id: '2',
-    name: 'Karol G - Mañana Será Bonito',
-    category: 'Conciertos',
-    date: '22 Jul 2026',
-    location: 'Estadio El Campín, Bogotá',
-    price: 280000,
-    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600',
-  },
-  {
-    id: '3',
-    name: 'Stereo Picnic 2026',
-    category: 'Festivales',
-    date: '25-27 Mar 2026',
-    location: 'Parque Simón Bolívar, Bogotá',
-    price: 450000,
-    image: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600',
-  },
-  {
-    id: '4',
-    name: 'Lollapalooza Colombia',
-    category: 'Festivales',
-    date: '10-12 Sep 2026',
-    location: 'Bogotá',
-    price: 520000,
-    image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=600',
-  },
-  {
-    id: '5',
-    name: 'El Rey León - Musical',
-    category: 'Teatro',
-    date: '05 May 2026',
-    location: 'Teatro Mayor, Bogotá',
-    price: 180000,
-    image: 'https://images.unsplash.com/photo-1503095396549-807759245b35?w=600',
-  },
-  {
-    id: '6',
-    name: 'Hamilton - Broadway',
-    category: 'Teatro',
-    date: '18 Jun 2026',
-    location: 'Teatro Colón, Bogotá',
-    price: 220000,
-    image: 'https://images.unsplash.com/photo-1512732351148-6c1886570412?w=600',
-  },
-  {
-    id: '7',
-    name: 'Colombia vs Argentina - Eliminatorias',
-    category: 'Deportes',
-    date: '30 Ago 2026',
-    location: 'Estadio Metropolitano, Barranquilla',
-    price: 150000,
-    image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600',
-  },
-  {
-    id: '8',
-    name: 'NBA Global Games - Lakers',
-    category: 'Deportes',
-    date: '15 Oct 2026',
-    location: 'Movistar Arena, Bogotá',
-    price: 380000,
-    image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600',
-  },
-  {
-    id: '9',
-    name: 'Coldplay - Music of the Spheres',
-    category: 'Conciertos',
-    date: '10 Ago 2026',
-    location: 'Estadio Atanasio Girardot, Medellín',
-    price: 320000,
-    image: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600',
-  },
-  {
-    id: '10',
-    name: 'Bad Bunny - World Tour',
-    category: 'Conciertos',
-    date: '20 Sep 2026',
-    location: 'Estadio Pascual Guerrero, Cali',
-    price: 290000,
-    image: 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=600',
-  },
-  {
-    id: '11',
-    name: 'Rock al Parque 2026',
-    category: 'Festivales',
-    date: '15-17 Jul 2026',
-    location: 'Parque Simón Bolívar, Bogotá',
-    price: 0,
-    image: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=600',
-  },
-  {
-    id: '12',
-    name: 'La Casa de Bernarda Alba',
-    category: 'Teatro',
-    date: '12 May 2026',
-    location: 'Teatro Libre, Bogotá',
-    price: 95000,
-    image: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=600',
-  },
-];
-
 export function CategoriesPage() {
-  const [activeCategory, setActiveCategory] = useState<Category>('Todos');
+  const [searchParams] = useSearchParams();
+  const categoriaIdInicial = searchParams.get('id');
 
-  const filteredEvents = activeCategory === 'Todos'
-    ? events
-    : events.filter(event => event.category === activeCategory);
+  // Estados para guardar lo que viene de Java
+  const [categoriasBD, setCategoriasBD] = useState<any[]>([]);
+  const [eventosBD, setEventosBD] = useState<any[]>([]);
+  const [activeCategoryId, setActiveCategoryId] = useState<number | null>(
+    categoriaIdInicial ? parseInt(categoriaIdInicial) : null
+  );
+  const [cargando, setCargando] = useState(true);
+
+  // 2. Fetch para traer los datos reales
+  useEffect(() => {
+    Promise.all([
+      fetch('http://localhost:8080/api/categorias').then(res => res.json()),
+      fetch('http://localhost:8080/api/eventos').then(res => res.json())
+    ])
+    .then(([categoriasData, eventosData]) => {
+      setCategoriasBD(categoriasData);
+      setEventosBD(eventosData);
+      setCargando(false);
+    })
+    .catch(err => {
+      console.error("Error al cargar datos:", err);
+      setCargando(false);
+    });
+  }, []);
+
+  // 3. Filtro dinámico
+  const filteredEvents = activeCategoryId === null
+    ? eventosBD
+    : eventosBD.filter(event => {
+        // Atrapamos el ID ya sea que venga anidado en 'categoria' o directo
+        const idCategoriaEvento = event.categoria?.idCategoria || event.idCategoria;
+
+        // Chivato para la consola del navegador
+        console.log(`Auditoría -> Evento: ${event.nombre} | ID que llega de BD: ${idCategoriaEvento} | Botón presionado: ${activeCategoryId}`);
+
+        // Forzamos a que ambos sean números para evitar que fallen las comparaciones
+        return Number(idCategoriaEvento) === Number(activeCategoryId);
+      });
+  if (cargando) {
+    return <div className="min-h-screen bg-[#000000] flex items-center justify-center text-[#00C2FF] text-xl font-bold">Cargando catálogo...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-[#000000] relative overflow-hidden">
-      {/* Background Effects */}
+      {/* Background Effects (Tus efectos originales) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-40 -left-32 w-[500px] h-[500px] bg-[#7B2CFF] rounded-full blur-[150px] opacity-10"></div>
         <div className="absolute bottom-40 -right-32 w-[500px] h-[500px] bg-[#00C2FF] rounded-full blur-[150px] opacity-10"></div>
@@ -182,16 +97,36 @@ export function CategoriesPage() {
           className="mb-12"
         >
           <div className="flex flex-wrap gap-3">
-            {categories.map((category) => {
-              const Icon = categoryIcons[category];
-              const isActive = activeCategory === category;
+            {/* Botón "Todos" estático */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setActiveCategoryId(null)}
+              className={`
+                px-6 py-3 rounded-full font-semibold text-base
+                flex items-center gap-2 transition-all duration-300
+                ${activeCategoryId === null
+                  ? 'text-white shadow-[0_0_30px_rgba(123,44,255,0.5)]'
+                  : 'text-gray-300 bg-[#1a1a1a] border border-gray-800 hover:border-[#7B2CFF]/50'
+                }
+              `}
+              style={activeCategoryId === null ? { background: 'linear-gradient(135deg, #7B2CFF 0%, #00C2FF 100%)' } : {}}
+            >
+              <Sparkles className="w-5 h-5" />
+              Todos
+            </motion.button>
+
+            {/* Botones Dinámicos desde MySQL */}
+            {categoriasBD.map((category) => {
+              const Icon = iconMap[category.icono] || HelpCircle;
+              const isActive = activeCategoryId === category.idCategoria;
 
               return (
                 <motion.button
-                  key={category}
+                  key={category.idCategoria}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setActiveCategory(category)}
+                  onClick={() => setActiveCategoryId(category.idCategoria)}
                   className={`
                     px-6 py-3 rounded-full font-semibold text-base
                     flex items-center gap-2 transition-all duration-300
@@ -200,12 +135,10 @@ export function CategoriesPage() {
                       : 'text-gray-300 bg-[#1a1a1a] border border-gray-800 hover:border-[#7B2CFF]/50'
                     }
                   `}
-                  style={isActive ? {
-                    background: 'linear-gradient(135deg, #7B2CFF 0%, #00C2FF 100%)',
-                  } : {}}
+                  style={isActive ? { background: 'linear-gradient(135deg, #7B2CFF 0%, #00C2FF 100%)' } : {}}
                 >
                   <Icon className="w-5 h-5" />
-                  {category}
+                  {category.nombre}
                 </motion.button>
               );
             })}
@@ -227,15 +160,22 @@ export function CategoriesPage() {
         {/* Events Grid */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeCategory}
+            key={activeCategoryId || 'todos'}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
-            {filteredEvents.map((event, index) => (
-              <Link to={`/evento/${event.id}`} key={event.id}>
+            {filteredEvents.map((event, index) => {
+              // Valores seguros mapeados desde tu BD
+              const precioSeguro = event.precio || 0;
+              const imagenSegura = event.enlace || 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600';
+              const fechaObj = new Date(event.fechaHora || Date.now());
+              const fechaSegura = fechaObj.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+
+              return (
+              <Link to={`/evento/${event.idEvento}`} key={event.idEvento}>
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -246,27 +186,27 @@ export function CategoriesPage() {
                   {/* Event Image */}
                   <div className="relative h-48 overflow-hidden">
                     <img
-                      src={event.image}
-                      alt={event.name}
+                      src={imagenSegura}
+                      alt={event.nombre}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
 
                     {/* Category Badge */}
                     <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md bg-black/50 text-white border border-white/20">
-                      {event.category}
+                      {event.categoria ? event.categoria.nombre : 'General'}
                     </div>
 
                     {/* Price Tag */}
                     <div className="absolute bottom-3 right-3">
-                      {event.price === 0 ? (
+                      {precioSeguro === 0 ? (
                         <div className="px-3 py-1 rounded-lg backdrop-blur-md bg-[#00C2FF]/20 border border-[#00C2FF]/50">
                           <span className="text-sm font-bold text-[#00C2FF]">GRATIS</span>
                         </div>
                       ) : (
                         <div className="px-3 py-1 rounded-lg backdrop-blur-md bg-black/60 border border-white/20">
                           <span className="text-sm font-bold text-white">
-                            ${event.price.toLocaleString('es-CO')}
+                            ${precioSeguro.toLocaleString('es-CO')}
                           </span>
                         </div>
                       )}
@@ -276,17 +216,17 @@ export function CategoriesPage() {
                   {/* Event Info */}
                   <div className="p-5">
                     <h3 className="text-lg font-bold text-white mb-3 line-clamp-2 group-hover:text-[#00C2FF] transition-colors">
-                      {event.name}
+                      {event.nombre}
                     </h3>
 
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-sm text-gray-400">
                         <Calendar className="w-4 h-4 text-[#7B2CFF]" />
-                        {event.date}
+                        {fechaSegura}
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-400">
                         <MapPin className="w-4 h-4 text-[#00C2FF]" />
-                        <span className="line-clamp-1">{event.location}</span>
+                        <span className="line-clamp-1">{event.lugar}</span>
                       </div>
                     </div>
 
@@ -298,7 +238,7 @@ export function CategoriesPage() {
                 </div>
               </motion.div>
               </Link>
-            ))}
+            )})}
           </motion.div>
         </AnimatePresence>
 

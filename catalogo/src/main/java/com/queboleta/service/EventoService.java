@@ -3,8 +3,10 @@ package com.queboleta.service;
 import com.queboleta.dto.EventoRequest;
 import com.queboleta.dto.EventoResponse;
 import com.queboleta.entity.Evento;
+import com.queboleta.entity.Categoria;
 import com.queboleta.enums.EstadoEvento;
 import com.queboleta.repository.EventoRepository;
+import com.queboleta.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +16,11 @@ import java.util.stream.Collectors;
 public class EventoService {
 
     private final EventoRepository eventoRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    public EventoService(EventoRepository eventoRepository) {
+    public EventoService(EventoRepository eventoRepository, CategoriaRepository categoriaRepository) {
         this.eventoRepository = eventoRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     // Crear evento (solo Administrador)
@@ -32,6 +36,15 @@ public class EventoService {
     // Ver todos los eventos disponibles (público)
     public List<EventoResponse> listarEventosActivos() {
         return eventoRepository.findByEstado(EstadoEvento.ACTIVO)
+                .stream()
+                .map(EventoResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    // 🔥 ESTE ES EL MÉTODO QUE EL CONTROLADOR ESTABA BUSCANDO
+    // Ver todos los eventos próximos (público)
+    public List<EventoResponse> listarEventosProximos() {
+        return eventoRepository.findByEstado(EstadoEvento.PROXIMAMENTE)
                 .stream()
                 .map(EventoResponse::fromEntity)
                 .collect(Collectors.toList());
@@ -88,6 +101,13 @@ public class EventoService {
         evento.setAforoDisponible(request.getAforoDisponible());
         evento.setDisponibilidad(request.getAforoDisponible());
         evento.setEstado(request.getEstado() != null ? request.getEstado() : EstadoEvento.ACTIVO);
-    }
 
+        if (request.getIdCategoria() != null) {
+            Categoria categoria = categoriaRepository.findById(request.getIdCategoria())
+                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada: " + request.getIdCategoria()));
+            evento.setCategoria(categoria);
+        } else {
+            evento.setCategoria(null);
+        }
+    }
 }

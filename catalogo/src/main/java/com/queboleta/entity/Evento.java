@@ -1,6 +1,7 @@
 package com.queboleta.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty; // 🔥 IMPORTANTE: La importación nueva
 import com.queboleta.enums.EstadoEvento;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -57,6 +58,10 @@ public class Evento {
     @Column(name = "enlace", length = 255)
     private String enlace;
 
+    @ManyToOne
+    @JoinColumn(name = "id_categoria")
+    private Categoria categoria;
+
     @PrePersist
     public void generarId() {
         if (this.idEvento == null) {
@@ -85,6 +90,9 @@ public class Evento {
         return String.format("Evento: %s | Artista: %s | Lugar: %s | Fecha: %s | Precio: $%.2f | Disponibles: %d",
                 nombre, artista, lugar, fechaHora, precio, disponibilidad);
     }
+
+    public Categoria getCategoria() { return categoria; }
+    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
 
     // Getters y Setters
     public String getIdEvento() { return idEvento; }
@@ -119,4 +127,13 @@ public class Evento {
 
     public String getEnlace() { return enlace; }
     public void setEnlace(String enlace) { this.enlace = enlace; }
+
+    // 🔥 ETIQUETA MÁGICA: Obliga a Spring Boot a enviar este dato al frontend sí o sí
+    @JsonProperty("idCategoria")
+    public Integer getIdCategoria() {
+        if (this.categoria != null) {
+            return this.categoria.getIdCategoria();
+        }
+        return null;
+    }
 }

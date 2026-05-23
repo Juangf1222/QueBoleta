@@ -1,11 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.queboleta.enums;
 
 public enum EstadoEvento {
     ACTIVO,
+    PROXIMAMENTE, // 🔥 El nuevo estado para tu slider
     CANCELADO,
-    REPROGRAMADO
+    REPROGRAMADO,
+    FINALIZADO
 }

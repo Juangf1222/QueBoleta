@@ -19,6 +19,7 @@ public class EventoResponse {
     private int disponibilidad;
     private EstadoEvento estado;
     private String enlace;
+    private Integer idCategoria;
 
     // Getters y Setters
     public String getIdEvento() {
@@ -81,6 +82,9 @@ public class EventoResponse {
         return aforoDisponible;
     }
 
+    public Integer getIdCategoria() { return idCategoria; }
+    public void setIdCategoria(Integer idCategoria) { this.idCategoria = idCategoria; }
+
     public void setAforoDisponible(int aforoDisponible) {
         this.aforoDisponible = aforoDisponible;
     }
@@ -113,18 +117,24 @@ public class EventoResponse {
 
     EventoResponse response = new EventoResponse();
 
-    response.setIdEvento(evento.getIdEvento());
-    response.setNombre(evento.getNombre());
-    response.setArtista(evento.getArtista());
-    response.setLugar(evento.getLugar());
-    response.setFechaHora(evento.getFechaHora());
-    response.setSinopsis(evento.getSinopsis());
-    response.setPrecio(evento.getPrecio());
-    response.setAforoDisponible(evento.getAforoDisponible());
-    response.setDisponibilidad(evento.getDisponibilidad());
-    response.setEstado(evento.getEstado());
-    response.setEnlace(evento.getEnlace());
+        response.setIdEvento(evento.getIdEvento());
+        response.setNombre(evento.getNombre());
+        response.setArtista(evento.getArtista());
+        response.setLugar(evento.getLugar());
+        response.setFechaHora(evento.getFechaHora());
+        response.setSinopsis(evento.getSinopsis());
+        response.setPrecio(evento.getPrecio());
+        response.setAforoDisponible(evento.getAforoDisponible());
+        response.setDisponibilidad(evento.getDisponibilidad());
+        response.setEstado(evento.getEstado());
+        response.setEnlace(evento.getEnlace());
 
-    return response;
-}
+
+        if (evento.getCategoria() != null) {
+            response.setIdCategoria(evento.getCategoria().getIdCategoria());
+        }
+
+        return response;
+    }
+
 }

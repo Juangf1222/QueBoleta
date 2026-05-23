@@ -11,17 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * TAREA 3: CRUD completo de eventos.
- *
- * GET    /api/eventos              → Listar eventos activos (público)
- * GET    /api/eventos/todos        → Listar todos los eventos (solo ADMINISTRADOR)
- * GET    /api/eventos/{id}         → Ver detalle de un evento (público)
- * GET    /api/eventos/buscar?nombre → Buscar eventos por nombre (público)
- * POST   /api/eventos              → Crear evento (solo ADMINISTRADOR)
- * PUT    /api/eventos/{id}         → Editar evento (solo ADMINISTRADOR)
- * DELETE /api/eventos/{id}         → Cancelar/eliminar evento (solo ADMINISTRADOR)
- */
 @RestController
 @RequestMapping("/api/eventos")
 @CrossOrigin(origins = "*")
@@ -58,6 +47,12 @@ public class EventoController {
         return ResponseEntity.ok(eventoService.buscarPorNombre(nombre));
     }
 
+    // Público: ver eventos próximos
+    @GetMapping("/proximos")
+    public ResponseEntity<List<EventoResponse>> listarEventosProximos() {
+        return ResponseEntity.ok(eventoService.listarEventosProximos());
+    }
+
     // Solo ADMINISTRADOR: crear evento
     @PostMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
@@ -81,4 +76,6 @@ public class EventoController {
         eventoService.eliminarEvento(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }
