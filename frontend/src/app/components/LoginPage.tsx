@@ -58,6 +58,8 @@ export function LoginPage() {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('nombre',data.nombre);
+        localStorage.setItem('correo',data.correo);
         navigate('/');
       } else {
         setError(data.mensaje || 'Error en la autenticación');

@@ -58,7 +58,7 @@ public class EntradaService {
 
         entrada.setEstado(EstadoEntrada.ACTIVA);
 
-        entrada.generarQR();
+        entrada.generarDatos();
 
         entradaRepository.save(entrada);
     }
@@ -69,7 +69,8 @@ public class EntradaService {
     public String generarCodigoQR(
             Entrada entrada) {
 
-        return entrada.generarQR();
+        entrada.generarDatos();
+        return entrada.getCodigoQR();
     }
 
     // =========================================

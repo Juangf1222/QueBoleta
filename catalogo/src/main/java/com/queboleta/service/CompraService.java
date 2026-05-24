@@ -63,7 +63,7 @@ public class CompraService {
             entrada.setPropietario(usuario);
             entrada.setEstado(EstadoEntrada.ACTIVA);
 
-            entrada.generarQR();
+            entrada.generarDatos();
 
             entradaRepository.save(entrada);
 

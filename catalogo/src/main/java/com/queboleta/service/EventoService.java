@@ -28,7 +28,6 @@ public class EventoService {
         Evento evento = new Evento();
         mapearCampos(evento, request);
         eventoRepository.save(evento);
-        evento.generarEnlace();
         eventoRepository.save(evento);
         return EventoResponse.fromEntity(evento);
     }
@@ -41,7 +40,7 @@ public class EventoService {
                 .collect(Collectors.toList());
     }
 
-    // 🔥 ESTE ES EL MÉTODO QUE EL CONTROLADOR ESTABA BUSCANDO
+    
     // Ver todos los eventos próximos (público)
     public List<EventoResponse> listarEventosProximos() {
         return eventoRepository.findByEstado(EstadoEvento.PROXIMAMENTE)
@@ -90,6 +89,7 @@ public class EventoService {
         eventoRepository.save(evento);
     }
 
+
     // Privado: mapea campos del request a la entidad
     private void mapearCampos(Evento evento, EventoRequest request) {
         evento.setNombre(request.getNombre());
@@ -101,6 +101,7 @@ public class EventoService {
         evento.setAforoDisponible(request.getAforoDisponible());
         evento.setDisponibilidad(request.getAforoDisponible());
         evento.setEstado(request.getEstado() != null ? request.getEstado() : EstadoEvento.ACTIVO);
+        evento.setEnlace(request.getEnlace());
 
         if (request.getIdCategoria() != null) {
             Categoria categoria = categoriaRepository.findById(request.getIdCategoria())

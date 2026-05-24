@@ -66,9 +66,18 @@ export function Navbar() {
             <div className="relative w-full group">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
-                type="text"
-                placeholder="Buscar artista, evento o ciudad"
-                className="w-full pl-10 pr-4 py-2 bg-white/5 border border-[#00C2FF]/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[#00C2FF] focus:shadow-[0_0_20px_rgba(0,194,255,0.3)] transition-all duration-300"
+              type="text"
+              placeholder="Buscar artista, evento o ciudad"
+              onChange={(e) => {
+                localStorage.setItem(
+                  'busquedaEventos',
+                  e.target.value
+                );
+                window.dispatchEvent(
+                  new Event('busquedaActualizada')
+                );
+              }}
+              className="w-full pl-10 pr-4 py-2 bg-white/5 border border-[#00C2FF]/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[#00C2FF] focus:shadow-[0_0_20px_rgba(0,194,255,0.3)] transition-all duration-300"
               />
             </div>
           </div>
@@ -125,9 +134,18 @@ export function Navbar() {
         <div className="relative group">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
-            type="text"
-            placeholder="Buscar..."
-            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-[#00C2FF]/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[#00C2FF] focus:shadow-[0_0_20px_rgba(0,194,255,0.3)] transition-all duration-300"
+          type="text"
+          placeholder="Buscar..."
+          onChange={(e) => {
+            localStorage.setItem(
+              'busquedaEventos',
+              e.target.value
+            );
+            window.dispatchEvent(
+              new Event('busquedaActualizada')
+            );
+          }}
+          className="w-full pl-10 pr-4 py-2 bg-white/5 border border-[#00C2FF]/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[#00C2FF] focus:shadow-[0_0_20px_rgba(0,194,255,0.3)] transition-all duration-300"
           />
         </div>
       </div>

@@ -70,12 +70,6 @@ public class Evento {
         this.disponibilidad = this.aforoDisponible;
     }
 
-    // Métodos del diagrama
-    public String generarEnlace() {
-        this.enlace = "https://queboleta.com/evento/" + idEvento;
-        return this.enlace;
-    }
-
     public int consultarDisponibilidad() {
         return this.disponibilidad;
     }

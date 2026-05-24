@@ -32,6 +32,8 @@ public class EventoRequest {
     // 🔥 EL NUEVO CAMPO: Para recibir la categoría desde el frontend
     private Integer idCategoria;
 
+    private String enlace;
+
     // ===== GETTERS Y SETTERS =====
 
     public String getNombre() { return nombre; }
@@ -61,4 +63,11 @@ public class EventoRequest {
     // 🔥 GETTER Y SETTER DE LA CATEGORÍA
     public Integer getIdCategoria() { return idCategoria; }
     public void setIdCategoria(Integer idCategoria) { this.idCategoria = idCategoria; }
+
+    public String getEnlace() {
+        return enlace;
+    }
+    public void setEnlace(String enlace) {
+        this.enlace = enlace;
+    }
 }

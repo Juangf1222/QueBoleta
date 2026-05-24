@@ -85,6 +85,8 @@ public class UsuarioService {
 
         return new AuthResponse(
                 jwtToken,
+                usuario.getNombre(),
+                usuario.getCorreo(),
                 "Usuario registrado correctamente"
         );
     }
@@ -116,11 +118,12 @@ public class UsuarioService {
                         );
 
         // Generar JWT
-        String jwtToken =
-                jwtUtils.generarToken(usuario);
+        String jwtToken = jwtUtils.generarToken(usuario);
 
         return new AuthResponse(
                 jwtToken,
+                usuario.getNombre(),
+                usuario.getCorreo(),
                 "Login exitoso"
         );
     }

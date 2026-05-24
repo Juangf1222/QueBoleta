@@ -2,6 +2,7 @@ package com.queboleta.controller;
 
 import com.queboleta.dto.EventoRequest;
 import com.queboleta.dto.EventoResponse;
+import com.queboleta.entity.Evento;
 import com.queboleta.service.EventoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -76,6 +77,5 @@ public class EventoController {
         eventoService.eliminarEvento(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }
